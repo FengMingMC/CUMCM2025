@@ -1,6 +1,5 @@
-print("Hello World")
-print("Hello World")
-print("Hello World")
-print("Hello World")
+import pandas as pd
 
-print("hello world")
+df1 = pd.read_excel('data/test.xlsx', sheet_name = 'Sheet1' )
+
+print(df1)
