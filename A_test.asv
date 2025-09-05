@@ -1,0 +1,127 @@
+% C2025_A_Problem1_Solver
+% 该脚本用于求解2025年高教社杯A题问题1：计算特定策略下的有效遮蔽时长。
+
+clear;
+clc;
+
+%% 1. 定义常量和初始条件
+% =========================================================================
+
+% 物理常量
+g = 9.8; % 重力加速度 (m/s^2)
+
+% 导弹 M1
+P_M1_0 = [20000, 0, 2000]; % M1 初始位置 (m) 
+v_M1 = 300; % M1 速度 (m/s) 
+
+% 无人机 FY1
+P_FY1_0 = [17800, 0, 1800]; % FY1 初始位置 (m) 
+v_FY1 = 120; % FY1 速度 (m/s) 
+
+% 目标
+P_FalseTarget = [0, 0, 0]; % 假目标位置 (m) 
+% 真目标为圆柱体，底面圆心(0,200,0), 半径7m, 高10m
+P_TrueTarget_Center = [0, 200, 5]; % 取真目标的几何中心 
+
+% 烟幕干扰弹
+R_Smoke = 10; % 烟幕云团半径 (m) 
+v_Smoke_sink = 3; % 烟幕云团下沉速度 (m/s) 
+t_smoke_effective_duration = 20; % 烟幕有效持续时间 (s) 
+
+% 事件时间
+t_drop = 1.5; % 投弹时间 (s)
+t_detonation_delay = 3.6; % 弹体起爆延迟 (s)
+
+
+%% 2. 计算关键事件的轨迹和坐标
+% =========================================================================
+
+% 计算 M1 的飞行方向向量 (指向假目标)
+dir_M1 = (P_FalseTarget - P_M1_0) / norm(P_FalseTarget - P_M1_0);
+
+% 计算 FY1 的飞行方向向量 (指向假目标)
+dir_FY1 = (P_FalseTarget - P_FY1_0) / norm(P_FalseTarget - P_FY1_0);
+V_FY1 = v_FY1 * dir_FY1; % FY1 的速度向量
+
+% 计算投弹点的空间位置
+P_drop = P_FY1_0 + V_FY1 * t_drop;
+
+% 计算起爆点的空间位置 (干扰弹做抛体运动)
+dx = V_FY1(1) * t_detonation_delay;
+dy = V_FY1(2) * t_detonation_delay;
+dz = V_FY1(3) * t_detonation_delay - 0.5 * g * (t_detonation_delay)^2;
+
+P_explosion = P_drop + [dx, dy, dz];
+
+% 定义烟幕有效的时间窗口
+t_explosion = t_drop + t_detonation_delay; % 烟幕起爆时刻
+t_shield_start = t_explosion;
+t_shield_end = t_explosion + t_smoke_effective_duration;
+
+fprintf('烟幕弹于 t = %.2f s 在坐标 [%.2f, %.2f, %.2f] 起爆。\n', ...
+    t_explosion, P_explosion(1), P_explosion(2), P_explosion(3));
+fprintf('遮蔽效果判定区间为: t = [%.2f s, %.2f s]\n', t_shield_start, t_shield_end);
+
+
+%% 3. 循环仿真并计算遮蔽时长
+% =========================================================================
+
+dt = 0.01; % 时间步长 (s)，步长越小结果越精确
+total_shielding_time = 0;
+
+for t = t_shield_start : dt : t_shield_end
+    
+    % (a) 计算当前时刻 t 的导弹位置
+    P_M1_t = P_M1_0 + dir_M1 * v_M1 * t;
+    
+    % (b) 计算当前时刻 t 的烟幕云团中心位置
+    t_since_explosion = t - t_explosion;
+    P_Smoke_Center_t = P_explosion - [0, 0, v_Smoke_sink * t_since_explosion];
+    
+    % (c) 判断视线是否被遮蔽
+    is_shielded = is_segment_sphere_intersect(P_M1_t, P_TrueTarget_Center, P_Smoke_Center_t, R_Smoke);
+    
+    if is_shielded
+        total_shielding_time = total_shielding_time + dt;
+    end
+    
+end
+
+%% 4. 显示最终结果
+% =========================================================================
+fprintf('\n---------------------------------------------------\n');
+fprintf('问题1求解结果：\n');
+fprintf('烟幕干扰弹对M1的有效遮蔽总时长为: %.4f s\n', total_shielding_time);
+fprintf('---------------------------------------------------\n');
+
+
+%% 辅助函数：判断线段与球体是否相交
+function is_intersect = is_segment_sphere_intersect(P1, P2, Sc, R)
+    % P1: 线段起点 (导弹位置)
+    % P2: 线段终点 (真目标中心)
+    % Sc: 球心位置
+    % R: 球体半径
+    
+    v = P2 - P1;      % 线段方向向量
+    w = Sc - P1;      % 球心到线段起点的向量
+    
+    c1 = dot(w, v);
+    if c1 <= 0
+        dist_sq = dot(w, w);
+    else
+        c2 = dot(v, v);
+        if c2 <= c1
+            dist_sq = dot(P2 - Sc, P2 - Sc);
+        else
+            b = c1 / c2;
+            Pb = P1 + b * v;
+            dist_sq = dot(Sc - Pb, Sc - Pb);
+        end
+    end
+    
+    if dist_sq <= R^2
+        is_intersect = true;
+    else
+        is_intersect = false;
+    end
+end

@@ -1,0 +1,73 @@
+%! TEX program = xelatex
+\documentclass{cumcmthesis}
+    %\documentclass[withoutpreface,bwprint]{cumcmthesis} %去掉封面与编号页
+
+    \title{论文题目}
+    \tihao{C}            % 题号
+    \baominghao{4321}    % 报名号
+    \schoolname{中山大学}
+    \membera{陈昊蔚}
+    \memberb{李可乐}
+    \memberc{蔡佳陆}
+    \supervisor{指导老师}
+    \yearinput{2025}     % 年
+    \monthinput{9}      % 月
+    \dayinput{5}        % 日
+
+    \begin{document}
+        \maketitle
+        \begin{abstract}
+            摘要的具体内容。
+            \keywords{Spearman检验\quad  K-Means聚类分析\quad   关键词3}
+        \end{abstract}
+        % \tableofcontents
+        \section{问题重述}
+        本节旨在提取题目的关键信息，全面概括关于NIPT时点选择与胎儿异常判定的背景，
+        并进一步明确根据孕妇的BMI、孕周数、孕情等个体差异，推断出既能确保准确性、又能
+        尽量降低治疗窗口期缩短的风险的最佳NIPT时点以及针对女胎异常的判定方法的现实要求，
+        从而更加清晰地把握问题的核心要点。
+
+        \subsection{问题背景}
+        
+        进入新时代，为了响应国家“晚婚晚育、少生优生”的号召，切实提高人口素质，
+        许多家庭选择在较晚的年龄生育子女。然而，随着高龄产妇比例的增加，胎儿染色体异常的风险也随之上升。
+        因此，如何在孕期早期准确筛查出胎儿染色体异常，成为了产前诊断领域亟需解决的重要问题。
+        \par 
+        NIPT（Non-Invasive Prenatal Test，无创产前检测）是一种产前检测技术，仅需对孕妇采集血样就可检测出其中的
+        胎儿游离DNA片段，并分析胎儿染色体是否存在异常（例如21号染色体数量异常导致唐氏综合征），从而在早期
+        就可掌握胎儿的健康状况。NIPT技术可以有效筛查唐氏综合征、爱德华氏综合征和帕陶氏综合征这三大染色体异常疾病，
+        准确率远超先前其他方法。此外，NIPT技术无需侵入性操作，避免了传统产前诊断方法可能带来的流产风险和对胎儿可能造成
+        的伤害，因而被广泛应用于临床实践中。
+        \par 我们本次研究的核心任务，便是基于一批孕妇的NIPT检测数据，
+        构建有效的数学模型。我们希望能够借助数学模型分析胎儿Y染色体浓度和孕妇孕情的关系、不同BMI孕妇的最佳NIPT时点以及针对无Y染色体的女胎的异常判定
+        方法等一系列问题。
+        因此，如何利用现代数据分析与数学建模技术，排除或修正这些数据中潜在的干扰，
+        准确地对上述问题完成模型建立与求解，成为了一个兼具医学意义与数据科学挑战的交叉学科课题。
+        
+        \subsection{基本问题}
+        附件是我国古代玻璃制品的相关数据，含有三个表单，
+        分别是玻璃文物的基本信息、已分类玻璃文物的化学成分比例以及未分类玻璃文物的化学成分比例。
+        为了依据考古工作者得到的古代玻璃制品相关数据完成对更多未知玻璃制品的分析和鉴别工作，现需要结合这些数据
+        和已知条件，建立数学模型，分析以下问题：
+        \par \textbf{问题一}：依据表单1和表单2，分析这些玻璃文物的表面风化与其具体的玻璃类型、纹饰和颜色是否存在
+        显著性关联，分析不同类型的玻璃制品表面风化与否的化学成分含量统计规律，并且利用风化点的检测数据，预测出该点
+        在风化前的化学成分含量。
+        \section{问题分析}
+        \section{模型假设}
+        \section{符号说明}
+        \begin{center}
+            \begin{tabular}{cc}
+                \hline
+                \makebox[0.3\textwidth][c]{符号}	&  \makebox[0.4\textwidth][c]{意义} \\ \hline
+                D	    & 木条宽度（cm） \\ \hline
+            \end{tabular}
+        \end{center}
+        \section{模型的建立与求解}
+        \section{总结}
+        \begin{thebibliography}{9}%宽度9
+            \bibitem{bib:one} ....
+        \end{thebibliography}
+        \begin{appendices}
+            附录的内容。
+        \end{appendices}
+\end{document}
