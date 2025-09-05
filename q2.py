@@ -1,7 +1,12 @@
+import math
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+from sympy import symbols, solve, Eq
+
+from scipy.datasets import download_all
 from scipy.stats import pearsonr, spearmanr
 import statsmodels.api as sm
 import seaborn as sns
@@ -105,19 +110,20 @@ print(df_boy)
 
 
 calculate_frame = pd.DataFrame({
-    "孕周":df_boy["孕周"],
-    "孕妇BMI": df_boy["孕妇BMI"],
-    "BMI取自然对数": np.log(df_boy["孕妇BMI"]),
-    "BMI取常用对数": np.log10(df_boy["孕妇BMI"]),
-    "BMI开方": np.sqrt(df_boy["孕妇BMI"]),
-    "GC含量": df_boy["GC含量"],
+    "Week":df_boy["孕周"],
+    "BMI": df_boy["孕妇BMI"],
+    "BMILn": np.log(df_boy["孕妇BMI"]),
+    "BMILog": np.log10(df_boy["孕妇BMI"]),
+    "BMISqrt": np.sqrt(df_boy["孕妇BMI"]),
+    "GC": df_boy["GC含量"],
     "原始读段数": df_boy["原始读段数"],
     "在参考基因组上比对的比例": df_boy["在参考基因组上比对的比例"],
     "重复读段的比例": df_boy["重复读段的比例"],
     "怀孕次数": df_boy['PregnancyTimes'],
     "生产次数": df_boy["生产次数"],
     "X染色体浓度": df_boy["X染色体浓度"],
-    "Y染色体浓度": df_boy["Y染色体浓度"]
+    "YContent": df_boy["Y染色体浓度"],
+    "ID": df_boy["孕妇代码"]
 })
 
 
@@ -125,55 +131,44 @@ calculate_frame = pd.DataFrame({
 def yPredict(time,bmi):
     return 0.9004 * time ** 0.2299 * bmi ** -0.9195
 
-column_to_normalize = '孕妇BMI'
-from sklearn.preprocessing import MinMaxScaler
-scaler = MinMaxScaler()
-calculate_frame[column_to_normalize] = scaler.fit_transform(calculate_frame[[column_to_normalize]])
 
-from sklearn.cluster import KMeans
+# minBMI = calculate_frame["BMI"].min()
+# maxBMI = calculate_frame["BMI"].max()
+# downIndexBMI = minBMI
 
-# 设定你想要分的簇的数量
-inertia = []
-k_range = range(1, 11) # 尝试 k 从 1 到 10
+def Divided(calculate_frame: pd.DataFrame, groupNumber):
+    minBMI = calculate_frame["BMI"].min()
+    maxBMI = calculate_frame["BMI"].max()
+    distant = (maxBMI - minBMI) / groupNumber
+    dfList = []
+    downIndexBMI = minBMI
+    memberNumber = [0] * groupNumber
+    time = symbols('t')
+    for i in range(groupNumber - 1):
+        df_temping = calculate_frame[(calculate_frame["BMI"] >= downIndexBMI) & (calculate_frame["BMI"] < downIndexBMI + distant)]
+        df_temping['equation_expr'] = df_temping.apply(lambda row: yPredict(time, row['BMI']), axis=1)
+        df_temping['predictTime'] = df_temping.apply(lambda row: solve(row["equation_expr"]-0.04,time), axis=1)
+        dfList.append(df_temping)
+        memberNumber[i] = dfList[i].shape[0]
+        downIndexBMI += distant
+    # print(groupNumber)
 
-for k in k_range:
-    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10) # n_init='auto' in newer versions
-    kmeans.fit(calculate_frame[[column_to_normalize]].values)
-    inertia.append(kmeans.inertia_)
-
-
-plt.figure(figsize=(10, 6))
-plt.plot(k_range, inertia, marker='o')
-plt.title('肘部法求最优 k')
-plt.xlabel('聚类数 (k)')
-plt.ylabel('惯性（聚类内平方和）')
-plt.xticks(k_range)
-plt.grid(True)
-plt.show()
-
-k=5
-
-kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-
-calculate_frame['cluster_label'] = kmeans.fit_predict(calculate_frame[[column_to_normalize]].values)
-
-print("\n聚类结果 DataFrame:")
-print(calculate_frame)
+    # dfList[i]["predictTime"] = solve(equation_expr, time)
+    return [dfList, memberNumber]
 
 
-# 可视化聚类结果
-plt.figure(figsize=(10, 6))
-# 绘制数据点，颜色由聚类标签决定
-scatter = plt.scatter(df.index, df['normalized_column'], c=df['cluster_label'], cmap='viridis', s=50, alpha=0.7)
 
-# 绘制聚类中心
-centers = kmeans.cluster_centers_
-plt.scatter(df.index, centers, c='red', s=200, alpha=0.9, marker='X', label='Cluster Centers')
+testFrame = Divided(calculate_frame,6)
 
-plt.title('K-Means Clustering Results on Normalized Column')
-plt.xlabel('Data Point Index')
-plt.ylabel('Normalized Value')
-plt.legend(*scatter.legend_elements(), title='Clusters')
-plt.legend()
-plt.grid(True)
-plt.show()
+
+
+print(testFrame)
+
+
+
+
+# column_to_normalize = '孕妇BMI'
+# from sklearn.preprocessing import MinMaxScaler
+# scaler = MinMaxScaler()
+# calculate_frame[column_to_normalize] = scaler.fit_transform(calculate_frame[[column_to_normalize]])
+

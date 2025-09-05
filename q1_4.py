@@ -104,19 +104,20 @@ print(df_boy)
 
 
 calculate_frame = pd.DataFrame({
-    "孕周":df_boy["孕周"],
-    "孕妇BMI": df_boy["孕妇BMI"],
-    "BMI取自然对数": np.log(df_boy["孕妇BMI"]),
-    "BMI取常用对数": np.log10(df_boy["孕妇BMI"]),
-    "BMI开方": np.sqrt(df_boy["孕妇BMI"]),
-    "GC含量": df_boy["GC含量"],
+    "Week":df_boy["孕周"],
+    "BMI": df_boy["孕妇BMI"],
+    "BMILn": np.log(df_boy["孕妇BMI"]),
+    "BMILog": np.log10(df_boy["孕妇BMI"]),
+    "BMISqrt": np.sqrt(df_boy["孕妇BMI"]),
+    "GC": df_boy["GC含量"],
     "原始读段数": df_boy["原始读段数"],
     "在参考基因组上比对的比例": df_boy["在参考基因组上比对的比例"],
     "重复读段的比例": df_boy["重复读段的比例"],
     "怀孕次数": df_boy['PregnancyTimes'],
     "生产次数": df_boy["生产次数"],
     "X染色体浓度": df_boy["X染色体浓度"],
-    "Y染色体浓度": df_boy["Y染色体浓度"]
+    "YContent": df_boy["Y染色体浓度"],
+    "ID": df_boy["孕妇代码"]
 })
 
 
@@ -125,33 +126,36 @@ calculate_frame = pd.DataFrame({
 
 
 
+'''尝试归一化
+column_to_normalize = 'BMI'
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+calculate_frame[column_to_normalize] = scaler.fit_transform(calculate_frame[[column_to_normalize]])
 
-#
-#
-#
-#
-#
-# a_true, b_true, c_true, d_true = 5, 1.5, 0.8, 0 #假设参数值
-# noise = np.random.normal(0, 20, calculate_frame.shape[0]) # 添加一些噪声
-#
-# yContent = a_true * (calculate_frame["孕周"]**b_true) * (calculate_frame["孕妇BMI"]**c_true) + noise
-#
-#
+
+column_to_normalize = 'Week'
+scaler = MinMaxScaler()
+calculate_frame[column_to_normalize] = scaler.fit_transform(calculate_frame[[column_to_normalize]])
+
+column_to_normalize = 'YContent'
+scaler = MinMaxScaler()
+calculate_frame[column_to_normalize] = scaler.fit_transform(calculate_frame[[column_to_normalize]])
+'''
 
 
 data = {
-    '孕周': calculate_frame["孕周"],
-    '孕妇BMI': calculate_frame["孕妇BMI"],
-    "Y染色体浓度": calculate_frame["Y染色体浓度"]}
+    'Week': calculate_frame["Week"],
+    'BMI': calculate_frame["BMI"],
+    "YContent": calculate_frame["YContent"]}
 df = pd.DataFrame(data)
-#
-df['孕周Log'] = np.log(df['孕周'])
-df['孕妇BMILog'] = np.log(df['孕妇BMI'])
-df['y染色体含量Log'] = np.log(df['Y染色体浓度'])
 
-A = np.vstack([df['孕周Log'], df['孕妇BMILog'], np.ones(len(df['孕妇BMILog']))]).T
+df['WeekLog'] = np.log(df['Week'])
+df['BMILog'] = np.log(df['BMI'])
+df['YContentLog'] = np.log(df['YContent'])
 
-coefficients, residuals, rank, s = np.linalg.lstsq(A, df['y染色体含量Log'], rcond=None)
+A = np.vstack([df['WeekLog'], df['BMILog'], np.ones(len(df['BMILog']))]).T
+
+coefficients, residuals, rank, s = np.linalg.lstsq(A, df['YContentLog'], rcond=None)
 
 b_fit = coefficients[0]
 c_fit = coefficients[1]
@@ -162,83 +166,137 @@ print(f"拟合结果 (通过对数转换):")
 print(f"a = {a_fit:.4f}")
 print(f"b = {b_fit:.4f}")
 print(f"c = {c_fit:.4f}")
-# print("--- 示例数据前5行 ---")
-# print(df.head())
-# print("\n")
-#
-# df['孕周Log'] = np.log(df['孕周'])
-# df['孕妇BMILog'] = np.log(df['孕妇BMI'])
-# df['y染色体含量Log'] = np.log(df['Y染色体浓度'])
-#
-#
-# print("--- 对数转换后的数据前5行 ---")
-# print(df[['孕周Log', '孕妇BMILog', 'y染色体含量Log']].head())
-# print("\n")
-#
-# Y = df['y染色体含量Log']
-# X = df[['孕周Log', '孕妇BMILog']]
-# X = sm.add_constant(X)
-#
-# model = sm.OLS(Y, X)
-# results = model.fit()
-#
-# r_squared = results.rsquared
-#
-# print(f"模型的R² (决定系数) 为: {r_squared:.4f}")
-#
-# beta_0 = results.params['const']     # log(a)
-# beta_1 = results.params['孕周Log'] # b
-# beta_2 = results.params['孕妇BMILog'] # c
-#
-# print("--- 线性回归结果 ---")
-# print(results.summary())
-# print("\n")
-#
-# a = np.exp(beta_0)
-# b = beta_1
-# c = beta_2
-#
-# print(f"拟合得到的模型参数 (d=0):")
-# print(f"  a = {a:.4f}")
-# print(f"  b = {b:.4f}")
-# print(f"  c = {c:.4f}")
-# print(f"  d = 0 (假设)")
-# print("\n")
-#
-#
-# y_pred = results.predict(X)
-# residuals = Y - y_pred
-#
-# plt.figure(figsize=(12, 6))
-#
-# # 残差与拟合值的散点图
-# plt.subplot(1, 2, 1)
-# sns.scatterplot(x=y_pred, y=residuals)
-# plt.axhline(0, color='red', linestyle='--')
-# plt.title('残差与拟合值散点图')
-# plt.xlabel('拟合值 (ln(Y染色体浓度))')
-# plt.ylabel('残差')
-#
-# # 残差的正态性Q-Q图
-# plt.subplot(1, 2, 2)
-# sm.qqplot(residuals, line='s', ax=plt.gca())
-# plt.title('残差正态性 Q-Q 图')
-#
-# plt.tight_layout()
-# plt.show()
-#
-from scipy import stats
-# import numpy as np
 
-# 假设有配对数据 (例如，处理前后的测量值)
-before_treatment = calculate_frame["Y染色体浓度"]
-after_treatment = a_fit * calculate_frame["孕周"]**b_fit * calculate_frame["孕妇BMI"]**c_fit
+from scipy import stats
+before_treatment = calculate_frame["YContent"]
+after_treatment = a_fit * calculate_frame["Week"]**b_fit * calculate_frame["BMI"]**c_fit
 
 # 执行配对样本t检验
 t_statistic, p_value = stats.ttest_rel(before_treatment, after_treatment)
 
+'''绘制折线图
+plt.figure(figsize=(10, 6))
+plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
+plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
+plt.grid(True) # 添加网格线，可选
+plt.show()'''
 print(f"\n配对样本t检验:")
 print(f"T统计量: {t_statistic:.4f}")
 print(f"P值: {p_value:.4f}")
+
+# 进行三次多项式拟合
+
+
+#
+# results = model.fit()
+#
+# print(results.summary())
+
+# def smallTest(calculate_frame: pd.DataFrame):
+def func2(x_data, a, b, c, d, e, f):
+    # x_data 现在是一个元组，包含 (x, y)
+    x, y = x_data
+    return a * x**2 + b * x * y + c * y**2 + d * x + e * y + f
+
+
+from scipy.optimize import curve_fit
+
+# 初始猜测参数值 (可以根据您的数据大致估计，这有助于提高拟合效率)
+initial_guess = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+x_data_packed = (np.array(calculate_frame["Week"]), np.array(calculate_frame["BMI"]))
+y_data = np.array(calculate_frame["YContent"])
+
+try:
+    # 进行拟合
+    params, covariance = curve_fit(func2, x_data_packed, y_data, p0=initial_guess)
+
+    # 提取拟合得到的参数
+    a_fit, b_fit, c_fit, d_fit, e_fit, f_fit = params
+
+    print("\n\n拟合得到的参数：")
+    print(f"a = {a_fit}")
+    print(f"b = {b_fit}")
+    print(f"c = {c_fit}")
+    print(f"d = {d_fit}")
+    print(f"e = {e_fit}")
+    print(f"f = {f_fit}")
+
+    # 可以选择计算拟合优度 R^2 等指标来评估拟合效果
+    # z_predicted = func(params, x_data, y_data)
+    # ss_res = np.sum((z_data - z_predicted)**2) # 残差平方和
+    # ss_tot = np.sum((z_data - np.mean(z_data))**2) # 总平方和
+    # r_squared = 1 - (ss_res / ss_tot)
+    # print(f"R^2 = {r_squared}")
+
+except RuntimeError as e:
+    print(f"拟合失败：{e}")
+    print("请检查您的数据和初始猜测参数。")
+
+after_treatment = a_fit * calculate_frame["Week"]**2 + b_fit * calculate_frame["Week"] * calculate_frame["BMI"] + c_fit * calculate_frame["BMI"]**2 + d_fit * calculate_frame["Week"] + e_fit * calculate_frame["BMI"] + f_fit
+
+# 执行配对样本t检验
+t_statistic, p_value = stats.ttest_rel(before_treatment, after_treatment)
+plt.figure(figsize=(10, 6))
+plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
+plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
+plt.grid(True) # 添加网格线，可选
+plt.show()
+print(f"\n配对样本t检验:")
+print(f"T统计量: {t_statistic:.4f}")
+print(f"P值: {p_value:.4f}")
+
+def func3 (x_data, a, b, c, d, e, f, g ,h ,i ,j):
+    x, y = x_data
+    return a*x**3 + b*x**2*y + c*x*y**2 + d*y**3 + e*x**2 + f*x*y + g*y**2 + h*x + i*y + j
+
+initial_guess = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+x_data_packed = (np.array(calculate_frame["Week"]), np.array(calculate_frame["BMI"]))
+y_data = np.array(calculate_frame["YContent"])
+
+try:
+    # 进行拟合
+    params, covariance = curve_fit(func3, x_data_packed, y_data, p0=initial_guess)
+
+    # 提取拟合得到的参数
+    a_fit, b_fit, c_fit, d_fit, e_fit, f_fit, g_fit, h_fit, i_fit, j_fit = params
+
+    print("\n\n拟合得到的参数：")
+    print(f"a = {a_fit}")
+    print(f"b = {b_fit}")
+    print(f"c = {c_fit}")
+    print(f"d = {d_fit}")
+    print(f"e = {e_fit}")
+    print(f"f = {f_fit}")
+    print(f"g = {g_fit}")
+    print(f"h = {h_fit}")
+    print(f"i = {i_fit}")
+    print(f"j = {j_fit}")
+
+    # 可以选择计算拟合优度 R^2 等指标来评估拟合效果
+    # z_predicted = func(params, x_data, y_data)
+    # ss_res = np.sum((z_data - z_predicted)**2) # 残差平方和
+    # ss_tot = np.sum((z_data - np.mean(z_data))**2) # 总平方和
+    # r_squared = 1 - (ss_res / ss_tot)
+    # print(f"R^2 = {r_squared}")
+
+
+
+    after_treatment = a_fit*calculate_frame["Week"]**3 + b_fit*calculate_frame["Week"]**2*calculate_frame["BMI"] + c_fit*calculate_frame["Week"]*calculate_frame["BMI"]**2 + d_fit*calculate_frame["BMI"]**3 + e_fit*calculate_frame["Week"]**2 + f_fit*calculate_frame["Week"]*calculate_frame["BMI"] + g_fit*calculate_frame["BMI"]**2 + h_fit*calculate_frame["Week"] + i_fit*calculate_frame["BMI"] + j_fit
+
+
+    # 执行配对样本t检验
+    t_statistic, p_value = stats.ttest_rel(before_treatment, after_treatment)
+    plt.figure(figsize=(10, 6))
+    plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
+    plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
+    plt.grid(True)  # 添加网格线，可选
+    plt.show()
+    print(f"\n配对样本t检验:")
+    print(f"T统计量: {t_statistic:.4f}")
+    print(f"P值: {p_value:.4f}")
+except RuntimeError as e:
+    print(f"拟合失败：{e}")
+    print("请检查您的数据和初始猜测参数。")
+
 
 

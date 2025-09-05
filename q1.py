@@ -83,6 +83,7 @@ agg_dict = {}
 for col in numeric_cols:
     agg_dict[col] = 'median'
 
+
 # 对于非数值列，应用众数聚合
 for col in non_numeric_cols:
     agg_dict[col] = get_mode
@@ -118,7 +119,7 @@ calculate_frame = pd.DataFrame({
     "怀孕次数": df_boy['PregnancyTimes'],
     "生产次数": df_boy["生产次数"],
 
-    "X染色体浓度": df_boy["X染色体浓度"],
+    # "X染色体浓度": df_boy["X染色体浓度"],
 
     "Y染色体浓度": df_boy["Y染色体浓度"]
 })
@@ -213,6 +214,7 @@ sns.heatmap(spearman_corr_matrix, annot=True, cmap='coolwarm', fmt=".2f",
 axes[1].set_title('Spearman Correlation Heatmap')
 
 plt.tight_layout()
+plt.savefig('pic/Pearson与Spearman相关系数热力图.pdf')
 plt.show()
 
 # 如果您想将p值也标注在热力图上
@@ -234,6 +236,7 @@ for i in annotations.index:
 
 sns.heatmap(pearson_corr_matrix, annot=annotations, cmap='coolwarm', fmt='s', ax=ax, linewidths=.5)
 ax.set_title('Pearson Correlation with Significance Stars\n(***: p<0.001, **: p<0.01, *: p<0.05)')
+plt.savefig('pic/Pearson相关系数.pdf')
 plt.show()
 
 print("hello world")
