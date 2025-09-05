@@ -64,41 +64,12 @@ plt.show()
 
 
 
-groups = df_boy['孕妇代码'].unique()
-
-
-
-
-# 2. 创建图表
-plt.figure(figsize=(10, 6))
-
-for i, group in enumerate(groups):
-    df_group = df_boy[df_boy['孕妇代码'] == group]
-
-    # 绘制散点图
-    plt.scatter(df_group['孕妇BMI'], df_group['Y染色体浓度'],
-                label=f'分组 {group}',
-                color='blue',
-                marker='o',
-                s=10,
-                alpha=0.20)  # s参数用于调整点的大小
-
-    # 绘制连线
-    # 按照X轴顺序对数据进行排序，确保连线是正确的
-    df_group_sorted = df_group.sort_values(by='孕妇BMI')
-    plt.plot(df_group_sorted['孕妇BMI'], df_group_sorted['Y染色体浓度'],linestyle='--')
-
-# 4. 添加图表元素
-plt.title('不同分组的散点图及连线', fontsize=16)
-plt.xlabel('X轴', fontsize=12)
-plt.ylabel('Y轴', fontsize=12)
-plt.grid(True, linestyle=':', alpha=0.6)
-plt.tight_layout()
-plt.show()
 
 
 
 groups = df_boy['孕妇代码'].unique()
+
+
 
 
 
@@ -130,6 +101,9 @@ plt.grid(True, linestyle=':', alpha=0.6)
 plt.tight_layout()
 plt.savefig('pic/BMI-y染色体浓度-散点图-连线')
 plt.show()
+
+
+
 
 
 
