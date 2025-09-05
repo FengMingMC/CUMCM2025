@@ -238,8 +238,8 @@ plt.show()
 
 print("hello world")
 
-
-calculate_frame.to_csv('data/final_data.csv', index=False)
+pd.DataFrame(df_boy).to_csv('data/final.csv', index=False, encoding='utf-8')
+calculate_frame.to_csv('data/calculate_data.csv', index=False, encoding='utf-8')
 
 
 
