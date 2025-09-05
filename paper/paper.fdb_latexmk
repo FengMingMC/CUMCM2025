@@ -1,13 +1,14 @@
 # Fdb version 4
-["xdvipdfmx"] 1757050210.13953 "paper.xdv" "paper.pdf" "paper" 1757050210.85009 0
-  "paper.xdv" 1757050210 39148 a7f76d610fdcc1c95aa215a4c0176df9 "xelatex"
+["xdvipdfmx"] 1757069393.92564 "paper.xdv" "paper.pdf" "paper" 1757069394.88055 0
+  "paper.xdv" 1757069393 70600 d1a22198676f64c1bbad796054b15434 "xelatex"
   (generated)
   "paper.pdf"
   (rewritten before read)
-["xelatex"] 1757050207.70214 "d:/Code/Competitions/CUMCM2025/paper/paper.tex" "paper.xdv" "paper" 1757050210.8449 0
+["xelatex"] 1757069391.04541 "d:/Code/Competitions/CUMCM2025/paper/paper.tex" "paper.xdv" "paper" 1757069394.87379 0
   "c:/Windows/Fonts/msyh.ttc" 1740293093 19704352 1e10e74402e59d54499af795caf0b135 ""
   "cumcmthesis.cls" 1755142003 25747 161e8e19f87ce152f305afdb0171bd30 ""
-  "d:/Code/Competitions/CUMCM2025/paper/paper.tex" 1757050204 4502 daf62d25b418ccc94b751c26bd9aa886 ""
+  "d:/Code/Competitions/CUMCM2025/paper/paper.tex" 1757069354 10211 a1a0d02c739e531bbc984c1bd6b57723 ""
+  "d:/Code/Competitions/CUMCM2025/pic/BMI箱线图.pdf" 1757062825 11774 d084e5222e368158a808e2fe5788cb2c ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1755137698 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1755102107 1528 7e12f4c0fcf5a072cebdcfbfc610f54c ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy7.tfm" 1755094899 1120 7f9f170e8aa57527ad6c49feafd45d54 ""
@@ -147,9 +148,9 @@
   "d:/Texlive/texlive/2025/texmf-dist/web2c/texmf.cnf" 1755138144 42213 4e2ca030e8e2640502016e9e45868dcb ""
   "d:/Texlive/texlive/2025/texmf-var/web2c/xetex/xelatex.fmt" 1755142328 4428738 037e090c8c3f3ead9e0e546a9d3ebc9e ""
   "d:/Texlive/texlive/2025/texmf.cnf" 1755102148 713 e69b156964470283e0530f5060668171 ""
-  "paper.aux" 1757050210 1203 3e488d6d459408e571b70602380fb5ee "xelatex"
-  "paper.out" 1757050210 901 59a2170579491eebd34043cfc29c3a3d "xelatex"
-  "paper.tex" 1757050204 4502 daf62d25b418ccc94b751c26bd9aa886 ""
+  "paper.aux" 1757069393 2805 59c3949e972f09eb7a1b80b09bdae63b "xelatex"
+  "paper.out" 1757069393 2277 dd7568e6c591ba8f8e49f8b798665d6a "xelatex"
+  "paper.tex" 1757069354 10211 a1a0d02c739e531bbc984c1bd6b57723 ""
   (generated)
   "paper.aux"
   "paper.log"
