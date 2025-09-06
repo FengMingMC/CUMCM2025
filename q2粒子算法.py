@@ -3,18 +3,13 @@ import numpy as np
 import pandas as pd
 import pyswarms as ps
 
-from q1_4 import calculate_frame
+from q1双对数模型建立 import calculate_frame
 
 # --- 1. 数据准备 ---
 # 请将 'data.xlsx - 男胎检测数据.csv' 文件中的男胎数据加载到 DataFrame 中
 # 确保文件路径正确
-# try:
-#     male_data = pd.read_excel('data/附件.xlsx', sheet_name = '男胎检测数据')
-# except FileNotFoundError:
-#     print("错误：文件未找到。请确保 'data.xlsx - 男胎检测数据.csv' 文件存在。")
-#     exit()
-
 male_data = calculate_frame
+
 # 将数据按BMI从小到大排序
 sorted_male_data = male_data.sort_values(by='BMI')
 sorted_male_data.reset_index(drop=True, inplace=True)
@@ -22,7 +17,7 @@ N = len(sorted_male_data)
 
 # --- 2. 定义核心函数 ---
 # 你的第一问回归模型参数 (请替换为实际值)
-a, b, c = 0.9004, 0.2299, -0.9195
+a, b, c = 0.9004, -0.9195, 0.2299
 
 
 def calculate_t(avg_bmi):
@@ -67,12 +62,13 @@ def fitness_function_pyswarms(positions):
             group_size = end_index - start_index
 
             # 约束1: 样本数量至少为20
+            # if group_size < 20 or group_size > 200:
             if group_size < 20:
                 is_valid_solution = False
                 break
 
             # 计算该分组的平均BMI
-            group_bmi_data = sorted_male_data.iloc[start_index:end_index]['BMI']
+            group_bmi_data = sorted_male_data.iloc[start_index:end_index]["BMI"]
             avg_bmi = np.mean(group_bmi_data)
 
             # 计算该分组的t值
@@ -140,9 +136,9 @@ for i in range(len(group_boundaries) - 1):
     end_index = group_boundaries[i + 1]
     group_data = sorted_male_data.iloc[start_index:end_index]
 
-    min_bmi = group_data['BMI'].min()
-    max_bmi = group_data['BMI'].max()
-    avg_bmi = group_data['BMI'].mean()
+    min_bmi = group_data["BMI"].min()
+    max_bmi = group_data["BMI"].max()
+    avg_bmi = group_data["BMI"].mean()
 
     t_value = calculate_t(avg_bmi)
 
