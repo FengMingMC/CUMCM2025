@@ -13,7 +13,7 @@ import seaborn as sns
 from scipy.optimize import curve_fit
 
 
-plt.rcParams['font.sans-serif'] = ['MiSans']
+plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 df_boy = pd.read_excel('data/附件.xlsx', sheet_name = '男胎检测数据' )

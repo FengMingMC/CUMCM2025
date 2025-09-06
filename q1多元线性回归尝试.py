@@ -4,7 +4,7 @@ import numpy as np
 import re
 import statsmodels.api as sm
 
-plt.rcParams['font.sans-serif'] = ['MiSans']
+plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
