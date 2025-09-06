@@ -1,146 +1,143 @@
-# 导入所需的库
-import numpy as np
 import pandas as pd
+import numpy as np
 import pyswarms as ps
 
 from q1双对数模型建立 import calculate_frame
 
-# --- 1. 数据准备 ---
-# 请将 'data.xlsx - 男胎检测数据.csv' 文件中的男胎数据加载到 DataFrame 中
-# 确保文件路径正确
-male_data = calculate_frame
+bmiList = calculate_frame['BMI']
 
-# 将数据按BMI从小到大排序
-sorted_male_data = male_data.sort_values(by='BMI')
-sorted_male_data.reset_index(drop=True, inplace=True)
-N = len(sorted_male_data)
+global_bmi_min = bmiList.min()
+global_bmi_max = bmiList.max()
 
-# --- 2. 定义核心函数 ---
-# 你的第一问回归模型参数 (请替换为实际值)
 a, b, c = 0.9004, -0.9195, 0.2299
 
 
-def calculate_t(avg_bmi):
-    """
-    根据平均BMI，使用回归模型计算达到4%浓度所需的孕周t。
-    """
-    if avg_bmi <= 0:
-        return np.inf
-
-    try:
-        t = (0.04 / (a * (avg_bmi ** b))) ** (1 / c)
-        return t
-    except (ZeroDivisionError, ValueError):
-        return np.inf
+def predictTestTime(BMI):
+    return (0.04 / (0.9004 * (BMI ** -0.9195))) ** (1 / 0.2299)
 
 
-def fitness_function_pyswarms(positions):
-    """
-    为pyswarms设计的适应度函数，计算总潜在风险。
-    输入: positions (np.array), 形状为 (n_particles, dimensions)
-    输出: 风险值数组 (np.array), 形状为 (n_particles,)
-    """
+def objective_function(positions, bmi_data, time_mapping):
+    # positions 是一个二维数组，形状为 (n_particles, n_dimensions)
     n_particles = positions.shape[0]
-    all_risks = np.zeros(n_particles)
+    costs = np.zeros(n_particles)
 
     for i in range(n_particles):
-        # 将连续位置四舍五入并转换为唯一的整数分割点
-        split_points = np.sort(np.unique(np.round(positions[i]).astype(int)))
+        # 获取第 i 个粒子的位置（分割点）
+        split_points = positions[i]
 
-        # 将分割点限制在有效范围内 [1, N-1]
-        split_points = np.clip(split_points, 1, N - 1)
+        # 对分割点进行排序
+        sorted_splits = np.sort(split_points)
 
-        # 确定每个分组的边界
-        group_boundaries = [0] + list(split_points) + [N]
-        total_risk = 0
-        is_valid_solution = True
+        # 1. 确定5组的BMI边界
+        min_bmi = bmi_data.min()
+        max_bmi = bmi_data.max()
 
-        # 遍历每个分组，计算其风险
+        # 将固定边界加入
+        group_boundaries = [min_bmi] + sorted_splits.tolist() + [max_bmi]
+
+        total_weighted_time = 0
+        total_samples = len(bmi_data)
+        valid_group = True
+
+        # 2. 遍历每一组，进行计算
         for j in range(len(group_boundaries) - 1):
-            start_index = group_boundaries[j]
-            end_index = group_boundaries[j + 1]
-            group_size = end_index - start_index
+            lower_bound = group_boundaries[j]
+            upper_bound = group_boundaries[j + 1]
 
-            # 约束1: 样本数量至少为20
-            # if group_size < 20 or group_size > 200:
-            if group_size < 20:
-                is_valid_solution = False
+            # 找到属于当前组的样本
+            group_samples = bmi_data[(bmi_data >= lower_bound) & (bmi_data < upper_bound)]
+            num_samples_in_group = len(group_samples)
+
+            # 约束检查 1: 每组不少于20人
+            if num_samples_in_group < 20 :
+                # 如果违反约束，给这个粒子一个很大的惩罚值
+                costs[i] = float('inf')
+                valid_group = False
                 break
 
-            # 计算该分组的平均BMI
-            group_bmi_data = sorted_male_data.iloc[start_index:end_index]["BMI"]
-            avg_bmi = np.mean(group_bmi_data)
-
-            # 计算该分组的t值
-            t_value = calculate_t(avg_bmi)
-
-            # 约束2: t值不能超过28周
-            if t_value > 28:
-                is_valid_solution = False
+            if num_samples_in_group > 500 :
+                # 如果违反约束，给这个粒子一个很大的惩罚值
+                costs[i] = float('inf')
+                valid_group = False
                 break
 
-            # 计算该分组的风险成本
-            group_risk = (group_size / N) * t_value
-            total_risk += group_risk
+            # 3. 计算该组的中心点
+            center = (lower_bound + upper_bound) / 2
 
-        # 如果不满足约束，给予巨大的惩罚
-        if not is_valid_solution:
-            all_risks[i] = np.inf
-        else:
-            all_risks[i] = total_risk
+            # 4. 找到对应的时间值
+            group_time = time_mapping(center)
 
-    return all_risks
+            # 5. 计算加权时间
+            weight = num_samples_in_group / total_samples
+            weighted_group_time = group_time * weight
+
+            # 6. 累加到总时间
+            total_weighted_time += weighted_group_time
+
+        if valid_group:
+            costs[i] = total_weighted_time
+
+    return costs
 
 
-# --- 3. 运行PSO算法寻找最优解 ---
-results = {}
+# 其余代码保持不变...
 
-# 遍历可能的分组数量 k (例如从2到10)
-for k_val in range(2, 11):
-    print(f"\n--- 运行针对 k = {k_val} 的PSO ---")
+# 假设你的bmi_data 是一个numpy数组或pandas Series
+# 假设你的 time_mapping_func 已经定义
 
-    dimensions = k_val - 1  # 粒子的维度等于分割点数量
+# 1. 确定搜索空间的边界
+min_bmi = bmiList.min()
+max_bmi = bmiList.max()
 
-    # 定义搜索空间的边界，确保分割点在有效索引范围内
-    bounds = (np.ones(dimensions), np.full(dimensions, N - 1))
+# PSO 需要优化4个变量 (p1, p2, p3, p4)
+k = 5
+dimensions = k - 1
 
-    # 初始化优化器，设置参数
-    options = {'c1': 2.0, 'c2': 2.0, 'w': 0.8}
-    optimizer = ps.single.GlobalBestPSO(n_particles=30, dimensions=dimensions, options=options, bounds=bounds)
+# 定义 PSO 的搜索空间边界
+lower_bounds = np.array([min_bmi] * dimensions)
+upper_bounds = np.array([max_bmi] * dimensions)
 
-    # 运行优化过程
-    cost, pos = optimizer.optimize(fitness_function_pyswarms, iters=200)
+# 2. 配置 PSO 优化器
+options = {
+    'c1': 0.5,  # 认知系数
+    'c2': 0.5,  # 社会系数
+    'w': 0.9,  # 惯性权重
+}
 
-    # 存储结果
-    results[k_val] = {
-        'risk': cost,
-        'split_points': pos
-    }
+# 3. 实例化 PSO 优化器
+optimizer = ps.single.GlobalBestPSO(n_particles=50,
+                                    dimensions=dimensions,
+                                    options=options,
+                                    bounds=(lower_bounds, upper_bounds))
 
-# --- 4. 找到并展示全局最优解 ---
-best_k = min(results, key=lambda k: results[k]['risk'])
-final_result = results[best_k]
-final_split_points = np.sort(np.unique(np.round(final_result['split_points']).astype(int)))
+# 4. 运行优化
+cost, pos = optimizer.optimize(objective_function, iters=100, bmi_data=bmiList, time_mapping=predictTestTime)
 
-print("\n--- 最终最优解 ---")
-print(f"最优分组数量 (k): {best_k}")
-print(f"最小潜在风险: {final_result['risk']:.4f}")
-print(f"最优分割点 (样本索引): {final_split_points}")
+# 5. 输出结果
+min_bmi = bmiList.min()
+max_bmi = bmiList.max()
+sorted_optimal_splits = sorted(pos)
+final_group_boundaries = [min_bmi] + sorted_optimal_splits + [max_bmi]
 
-# 你可以根据最终分割点来进一步分析每个分组的BMI区间和t值
-# 例如:
-print("\n--- 最优分组方案详情 ---")
-group_boundaries = [0] + list(final_split_points) + [N]
-for i in range(len(group_boundaries) - 1):
-    start_index = group_boundaries[i]
-    end_index = group_boundaries[i + 1]
-    group_data = sorted_male_data.iloc[start_index:end_index]
-
-    min_bmi = group_data["BMI"].min()
-    max_bmi = group_data["BMI"].max()
-    avg_bmi = group_data["BMI"].mean()
-
-    t_value = calculate_t(avg_bmi)
+final_total_weighted_time = 0
+print("最优分组方案：")
+for i in range(len(final_group_boundaries) - 1):
+    lower = final_group_boundaries[i]
+    upper = final_group_boundaries[i + 1]
+    group_samples = bmiList[(bmiList >= lower) & (bmiList < upper)]
+    num_samples = len(group_samples)
+    center = (lower + upper) / 2
+    group_time = predictTestTime(center)
+    weight = num_samples / len(bmiList)
+    weighted_time = group_time * weight
+    final_total_weighted_time += weighted_time
 
     print(
-        f"第 {i + 1} 组: BMI 区间 [{min_bmi:.2f}, {max_bmi:.2f}]，样本数 {len(group_data)}，最佳NIPT时点 {t_value:.2f} 周")
+        f"  组 {i + 1}: BMI [{lower:.2f}, {upper:.2f}) - {num_samples} 人 (占比 {weight:.2%}) - 加权时间: {weighted_time:.2f}")
+
+print(f"\n最小总加权时间: {final_total_weighted_time:.2f}")
+
+# 3. 再次验证约束
+if any([len(bmiList[(bmiList >= final_group_boundaries[i]) & (bmiList < final_group_boundaries[i + 1])]) < 20 for i in
+        range(len(final_group_boundaries) - 1)]):
+    print("警告：最优方案存在分组人数少于20人的情况，请检查目标函数中的惩罚项设置！")
