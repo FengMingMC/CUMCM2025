@@ -1,16 +1,17 @@
 # Fdb version 4
-["xdvipdfmx"] 1757136318.27171 "paper.xdv" "paper.pdf" "paper" 1757136319.01092 0
-  "paper.xdv" 1757136318 84416 fabe63af54b824fcbd7e4b2c04d6c9b6 "xelatex"
+["xdvipdfmx"] 1757176591.92158 "paper_V2.xdv" "paper_V2.pdf" "paper_V2" 1757176593.33161 0
+  "paper_V2.xdv" 1757176591 111300 79b8366b9083b2ba07c0861ed60aa866 "xelatex"
   (generated)
-  "paper.pdf"
+  "paper_V2.pdf"
   (rewritten before read)
-["xelatex"] 1757136315.24831 "d:/Code/Competitions/CUMCM2025/paper/paper.tex" "paper.xdv" "paper" 1757136319.00347 0
+["xelatex"] 1757176586.80839 "d:/Code/Competitions/CUMCM2025/paper/paper_V2.tex" "paper_V2.xdv" "paper_V2" 1757176593.3168 0
   "c:/Windows/Fonts/msyh.ttc" 1740293093 19704352 1e10e74402e59d54499af795caf0b135 ""
   "cumcmthesis.cls" 1755142003 25747 161e8e19f87ce152f305afdb0171bd30 ""
-  "d:/Code/Competitions/CUMCM2025/paper/paper.tex" 1757136310 13729 7c27a42cf55ed50837f4cd907d92c469 ""
+  "d:/Code/Competitions/CUMCM2025/paper/paper_V2.tex" 1757176585 19402 b276696ac27034eec266162806cc008e ""
   "d:/Code/Competitions/CUMCM2025/pic/BMI箱线图.pdf" 1757062825 11774 d084e5222e368158a808e2fe5788cb2c ""
   "d:/Code/Competitions/CUMCM2025/pic/Pearson相关系数.pdf" 1757078272 43445 39f6ed3cd53aa2669950d4768a695fbc ""
   "d:/Code/Competitions/CUMCM2025/pic/Pearson与Spearman相关系数热力图.pdf" 1757078276 49182 330cfb90b905636119ab1d7d656112e1 ""
+  "d:/Code/Competitions/CUMCM2025/pic/对比图.pdf" 1757148311 44177 92bc9ff863c301dc6254363b14aa68df ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1755137698 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1755102107 1528 7e12f4c0fcf5a072cebdcfbfc610f54c ""
   "d:/Texlive/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy7.tfm" 1755094899 1120 7f9f170e8aa57527ad6c49feafd45d54 ""
@@ -150,12 +151,12 @@
   "d:/Texlive/texlive/2025/texmf-dist/web2c/texmf.cnf" 1755138144 42213 4e2ca030e8e2640502016e9e45868dcb ""
   "d:/Texlive/texlive/2025/texmf-var/web2c/xetex/xelatex.fmt" 1755142328 4428738 037e090c8c3f3ead9e0e546a9d3ebc9e ""
   "d:/Texlive/texlive/2025/texmf.cnf" 1755102148 713 e69b156964470283e0530f5060668171 ""
-  "paper.aux" 1757136318 3422 3193dd65291ce091688320b9491776f9 "xelatex"
-  "paper.out" 1757136318 2177 2949adf228ce2d04116e3d09b4537e2d "xelatex"
-  "paper.tex" 1757136310 13729 7c27a42cf55ed50837f4cd907d92c469 ""
+  "paper_V2.aux" 1757176591 4310 224301add1b23413d0ed41ab87431587 "xelatex"
+  "paper_V2.out" 1757176591 2716 a83e7160b45cf88ec126efb2c1860fe8 "xelatex"
+  "paper_V2.tex" 1757176585 19402 b276696ac27034eec266162806cc008e ""
   (generated)
-  "paper.aux"
-  "paper.log"
-  "paper.out"
-  "paper.xdv"
+  "paper_V2.aux"
+  "paper_V2.log"
+  "paper_V2.out"
+  "paper_V2.xdv"
   (rewritten before read)
