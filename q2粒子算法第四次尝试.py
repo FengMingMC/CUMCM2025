@@ -3,6 +3,7 @@ import numpy as np
 import pyswarms as ps
 import matplotlib.pyplot as plt
 from pyswarms.utils.plotters import plot_cost_history
+from sympy import expint
 
 from q1数据清洗 import calculate_frame
 
@@ -14,10 +15,14 @@ print(f"BMI 最大值: {bmiList["BMI"].max():.2f}")
 print(bmiList.head())
 
 
-a, b, c = 0.9004, -0.9195, 0.2299
+# a, b, c = 0.9004, -0.9195, 0.2299
+a = -0.15687118657466897
+b = 0.011237404267030371
+c = -0.00019477101397865466
+d = 0.059200154502078876
 def time_func_of_bmi(bmi):
     # 假设BMI在22.5时时间最短（例如10个单位），其他情况时间更长
-    return (0.04 / (a * (bmi ** b))) ** (1 / c)
+    return 10**((0.04 - a - b * bmi - c * bmi**2)/d)-1
 
 
 # 将数据转换为numpy数组以提高计算速度
@@ -64,7 +69,8 @@ def calculate_total_time(boundaries):
 
             # 计算该组的加权时间
         midpoint = (lower_bound + upper_bound) / 2
-        time_at_midpoint = time_func_of_bmi(midpoint)
+        # time_at_midpoint = time_func_of_bmi(midpoint)
+        time_at_midpoint = time_func_of_bmi(upper_bound)
         weight = sample_count / total_samples
         weighted_time = time_at_midpoint * weight
 
@@ -122,16 +128,17 @@ for i in range(k):
         mask = (bmi_values >= lower) & (bmi_values <= upper)
 
     count = np.sum(mask)
-    midpoint_val = (lower + upper) / 2
-    time_val = time_func_of_bmi(midpoint_val)
+    # midpoint_val = (lower + upper) / 2
+    time_val = time_func_of_bmi(upper)
     weight_val = count / total_samples
 
     results_data.append({
         "组别": i + 1,
         "BMI范围": f"[{lower:.2f}, {upper:.2f})",
         "人数": count,
-        "范围中点": f"{midpoint_val:.2f}",
-        "对应时间": f"{time_val:.2f}",
+        # "范围中点": f"{midpoint_val:.2f}",
+        "上界对应时间": f"{time_val:.2f}",
+
         "权重": f"{weight_val:.2%}",
         "加权时间": f"{time_val * weight_val:.4f}"
     })

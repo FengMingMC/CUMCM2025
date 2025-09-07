@@ -49,6 +49,8 @@ def get_mode(x):
     mode_values = x.mode()
     return mode_values[0] if not mode_values.empty else np.nan
 
+df_temp = df_boy[df_boy["唯一比对的读段数  "]/df_boy["原始读段数"]>=0.7]
+df_boy = df_temp
 # 确定分组的列
 group_cols = ['孕妇代码', '孕周']
 

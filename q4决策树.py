@@ -99,7 +99,7 @@ plot_tree(
     # fontname="helvetica",
 )
 plt.title("Decision Tree Classifier")
-plt.savefig("DecisionTreeClassifier.svg")
+plt.savefig("DecisionTreeClassifier.pdf")
 plt.show()
 
 
