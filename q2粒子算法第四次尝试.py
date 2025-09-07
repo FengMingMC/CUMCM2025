@@ -6,7 +6,7 @@ from pyswarms.utils.plotters import plot_cost_history
 from sympy import expint
 
 from q1数据清洗 import calculate_frame
-
+from q4决策树 import dt_classifier
 
 bmiList = pd.DataFrame({"BMI":calculate_frame["孕妇BMI"]})
 print(f"总样本量: {len(bmiList)}")
@@ -155,3 +155,4 @@ plt.title("PSO Convergence Plot")
 plt.xlabel("Iteration")
 plt.ylabel("Total Weighted Time (Cost)")
 plt.show()
+

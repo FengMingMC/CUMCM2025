@@ -27,6 +27,7 @@ df_boy['孕周'] = df_boy.apply(calculate_week, axis=1)
 
 groups = df_boy['孕妇代码'].unique()
 
+df_boy = df_boy[df_boy['孕妇BMI'] >= 25]
 
 def pregnancyTimes(row):
     # 怀孕次数转化
@@ -201,20 +202,21 @@ print("\n斯皮尔曼相关系数的显著性 (p-value) 矩阵：\n", spearman_p
 
 # sns.set_theme(style="white")
 
-fig, axes = plt.subplots(1, 2, figsize=(18, 8))
+fig, ax = plt.subplots(figsize=(10, 8))
 
 # 绘制皮尔逊相关系数热力图
-sns.heatmap(pearson_corr_matrix, annot=True, cmap='coolwarm', fmt=".2f",
-            linewidths=.5, ax=axes[0])
-axes[0].set_title('Pearson Correlation Heatmap')
+# sns.heatmap(pearson_corr_matrix, annot=True, cmap='coolwarm', fmt=".2f",
+#             linewidths=.5, ax=axes[0])
+# axes[0].set_title('Pearson Correlation Heatmap')
 
 # 绘制斯皮尔曼相关系数热力图
 sns.heatmap(spearman_corr_matrix, annot=True, cmap='coolwarm', fmt=".2f",
-            linewidths=.5, ax=axes[1])
-axes[1].set_title('Spearman Correlation Heatmap')
+            linewidths=.5)
+ax.set_title('Spearman相关系数热力图')
+
 
 plt.tight_layout()
-plt.savefig('pic/Pearson与Spearman相关系数热力图.pdf')
+plt.savefig('pic/Spearman相关系数热力图.pdf')
 plt.show()
 
 # 如果您想将p值也标注在热力图上
@@ -235,7 +237,10 @@ for i in annotations.index:
             annotations.loc[i, j] = f'{corr_val:.2f}'
 
 sns.heatmap(pearson_corr_matrix, annot=annotations, cmap='coolwarm', fmt='s', ax=ax, linewidths=.5)
-ax.set_title('Pearson Correlation with Significance Stars\n(***: p<0.001, **: p<0.01, *: p<0.05)')
+ax.set_title('Pearson相关系数与p指数\n(***: p<0.001, **: p<0.01, *: p<0.05)')
+
+
+plt.tight_layout()
 plt.savefig('pic/Pearson相关系数.pdf')
 plt.show()
 

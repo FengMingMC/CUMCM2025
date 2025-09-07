@@ -27,6 +27,7 @@ df_boy['孕周'] = df_boy.apply(calculate_week, axis=1)
 
 groups = df_boy['孕妇代码'].unique()
 
+df_boy = df_boy[df_boy['孕妇BMI'] >= 25]
 
 def pregnancyTimes(row):
     # 怀孕次数转化

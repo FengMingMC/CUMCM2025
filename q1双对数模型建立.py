@@ -31,12 +31,21 @@ A = np.vstack([df['WeekLog'], df['BMILog'], np.ones(len(df['BMILog']))]).T
 
 coefficients, residuals, rank, s = np.linalg.lstsq(A, df['YContentLog'], rcond=None)
 
+y_true = df['YContentLog']
+y_mean = np.mean(y_true)
+ss_tot = np.sum((y_true - y_mean)**2)
+
+ss_res = residuals[0] # 取残差平方和的第一个值
+r2 = 1 - (ss_res / ss_tot)
+print(f"\n\nR2: {r2}")
+
+
 b_fit = coefficients[0]
 c_fit = coefficients[1]
 log_a_fit = coefficients[2]
 a_fit = np.exp(log_a_fit)
 
-print(f"拟合结果 (通过对数转换):")
+print(f"拟合双对数结果:")
 print(f"a = {a_fit:.4f}")
 print(f"b = {b_fit:.4f}")
 print(f"c = {c_fit:.4f}")
@@ -58,15 +67,9 @@ print(f"\n配对样本t检验:")
 print(f"T统计量: {t_statistic:.4f}")
 print(f"P值: {p_value:.4f}")
 
-# 进行三次多项式拟合
 
+#二次函数 拟合
 
-#
-# results = model.fit()
-#
-# print(results.summary())
-
-# def smallTest(calculate_frame: pd.DataFrame):
 def func2(x_data, a, b, c, d, e, f):
     # x_data 现在是一个元组，包含 (x, y)
     x, y = x_data
@@ -75,7 +78,6 @@ def func2(x_data, a, b, c, d, e, f):
 
 from scipy.optimize import curve_fit
 
-# 初始猜测参数值 (可以根据您的数据大致估计，这有助于提高拟合效率)
 initial_guess = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 x_data_packed = (np.array(calculate_frame["Week"]), np.array(calculate_frame["BMI"]))
 y_data = np.array(calculate_frame["YContent"])
@@ -87,7 +89,7 @@ try:
     # 提取拟合得到的参数
     a_fit, b_fit, c_fit, d_fit, e_fit, f_fit = params
 
-    print("\n\n拟合得到的参数：")
+    print("\n\n拟合二次函数得到的参数：")
     print(f"a = {a_fit}")
     print(f"b = {b_fit}")
     print(f"c = {c_fit}")
@@ -95,12 +97,7 @@ try:
     print(f"e = {e_fit}")
     print(f"f = {f_fit}")
 
-    # 可以选择计算拟合优度 R^2 等指标来评估拟合效果
-    # z_predicted = func(params, x_data, y_data)
-    # ss_res = np.sum((z_data - z_predicted)**2) # 残差平方和
-    # ss_tot = np.sum((z_data - np.mean(z_data))**2) # 总平方和
-    # r_squared = 1 - (ss_res / ss_tot)
-    # print(f"R^2 = {r_squared}")
+
 
 except RuntimeError as e:
     print(f"拟合失败：{e}")
@@ -110,11 +107,11 @@ after_treatment = a_fit * calculate_frame["Week"]**2 + b_fit * calculate_frame["
 
 # 执行配对样本t检验
 t_statistic, p_value = stats.ttest_rel(before_treatment, after_treatment)
-plt.figure(figsize=(10, 6))
-plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
-plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
-plt.grid(True) # 添加网格线，可选
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
+# plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
+# plt.grid(True) # 添加网格线，可选
+# plt.show()
 print(f"\n配对样本t检验:")
 print(f"T统计量: {t_statistic:.4f}")
 print(f"P值: {p_value:.4f}")
@@ -134,7 +131,7 @@ try:
     # 提取拟合得到的参数
     a_fit, b_fit, c_fit, d_fit, e_fit, f_fit, g_fit, h_fit, i_fit, j_fit = params
 
-    print("\n\n拟合得到的参数：")
+    print("\n\n拟合三次函数得到的参数：")
     print(f"a = {a_fit}")
     print(f"b = {b_fit}")
     print(f"c = {c_fit}")
@@ -146,13 +143,6 @@ try:
     print(f"i = {i_fit}")
     print(f"j = {j_fit}")
 
-    # 可以选择计算拟合优度 R^2 等指标来评估拟合效果
-    # z_predicted = func(params, x_data, y_data)
-    # ss_res = np.sum((z_data - z_predicted)**2) # 残差平方和
-    # ss_tot = np.sum((z_data - np.mean(z_data))**2) # 总平方和
-    # r_squared = 1 - (ss_res / ss_tot)
-    # print(f"R^2 = {r_squared}")
-
 
 
     after_treatment = a_fit*calculate_frame["Week"]**3 + b_fit*calculate_frame["Week"]**2*calculate_frame["BMI"] + c_fit*calculate_frame["Week"]*calculate_frame["BMI"]**2 + d_fit*calculate_frame["BMI"]**3 + e_fit*calculate_frame["Week"]**2 + f_fit*calculate_frame["Week"]*calculate_frame["BMI"] + g_fit*calculate_frame["BMI"]**2 + h_fit*calculate_frame["Week"] + i_fit*calculate_frame["BMI"] + j_fit
@@ -160,11 +150,7 @@ try:
 
     # 执行配对样本t检验
     t_statistic, p_value = stats.ttest_rel(before_treatment, after_treatment)
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(np.array(df_boy["序号"]), np.array(before_treatment), marker='o', linestyle='-', color='b', label='数组 1')
-    # plt.plot(np.array(df_boy["序号"]), np.array(after_treatment), marker='x', linestyle='--', color='r', label='数组 2')
-    # plt.grid(True)  # 添加网格线，可选
-    # plt.show()
+
     print(f"\n配对样本t检验:")
     print(f"T统计量: {t_statistic:.4f}")
     print(f"P值: {p_value:.4f}")

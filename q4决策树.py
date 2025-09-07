@@ -1,8 +1,10 @@
 import pydot
 from mpmath import plot
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn import metrics
+from sklearn.metrics import accuracy_score, classification_report, roc_curve, auc
 from sklearn.tree import DecisionTreeClassifier, export_graphviz, plot_tree
 
+# from main import female_data_content
 from q4清洗数据 import *
 
 calculate_frame = pd.DataFrame({
@@ -102,4 +104,37 @@ plt.title("Decision Tree Classifier")
 plt.savefig("DecisionTreeClassifier.pdf")
 plt.show()
 
+fpr, tpr, thresholds = roc_curve(y, y_pred)
+roc_auc = auc(fpr, tpr)
 
+plt.figure(figsize=[20,12])
+plt.plot(fpr, tpr, label="AUC = %0.2f" % roc_auc)
+plt.plot([0, 1], [0, 1], 'k--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.0])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend(loc="lower right")
+plt.title('ROC曲线')
+plt.grid(True)
+plt.savefig("ROC.pdf")
+plt.show()
+
+feature_importance = dt_classifier.feature_importances_
+
+features = X.columns
+
+importance_df = pd.DataFrame(
+    {'feature': features,
+     'importance': feature_importance
+     }).sort_values('importance', ascending=False)
+
+print("特征重要性")
+print(importance_df)
+plt.figure(figsize=[20,12])
+plt.barh(importance_df['feature'], importance_df['importance'])
+plt.xlabel('重要性')
+plt.title('特征重要性')
+plt.gca().invert_yaxis()
+plt.savefig("特征重要性可视化排序.pdf")
+plt.show()
